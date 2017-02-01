@@ -1,4 +1,7 @@
 Given(/^I'm on the home page$/) do
+  @api = Boomtown::Api.new(
+                          ENV.fetch()
+  )
   @web = Boomtown::Web.new
   @web.visit '/'
 end
@@ -25,8 +28,10 @@ And(/^each result is in (.*)$/) do |location|
   links = @web.find_all 'a.at-related-props-card'
   # a .at-related-props-card - things with class inside a tags
   # a.at-related-props-card - a tags with class ...
-  locations = links.map { |l| l.attribute :href }
-  pending
+  links.each do |link|
+    href
+  end
+  expect(locations['PublicRemarks'].downcase).to include location.downcase
 end
 
 And(/^I click "Save Search"$/) do
