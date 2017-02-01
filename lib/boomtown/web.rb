@@ -31,7 +31,15 @@ module Boomtown
 
     def wait_for(selector)
       wait.until do
-        find selector
+        found = find selector
+        found if found && found.displayed?
+      end
+    end
+
+    def wait_for_invis(selector)
+      wait.until do
+        found = find selector
+        found if found && !found.displayed?
       end
     end
 
@@ -39,7 +47,7 @@ module Boomtown
 
     def search_for(term)
       visit "/"
-      search = wait_for '#query'
+      search = wait_for('#query')
       search.send_keys term
 
       btn = find '.bt-home-search__button'
