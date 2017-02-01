@@ -10,7 +10,7 @@ module Boomtown
       #   '--disable-popup-blocking'
       # ]
       @driver.manage.window.resize_to(1600, 1200)
-      @wait = Selenium::WebDriver::Wait.new timeout: 15
+      @wait = Selenium::WebDriver::Wait.new timeout: 45
 
       at_exit { @driver.quit }
     end
@@ -36,18 +36,11 @@ module Boomtown
       end
     end
 
-    def wait_for_invis(selector)
-      wait.until do
-        found = find selector
-        found if found && !found.displayed?
-      end
-    end
-
     # Domain-level helpers
 
     def search_for(term)
-      visit "/"
-      search = wait_for('#query')
+      visit '/'
+      search = wait_for '#query'
       search.send_keys term
 
       btn = find '.bt-home-search__button'

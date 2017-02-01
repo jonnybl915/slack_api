@@ -16,10 +16,6 @@ Then(/^"([^"]*)" appears in the filter list$/) do |term|
   expect(tag).not_to eq nil
 end
 
-# And(/^There are at least (\d+) results$/) do |count|
-#   pending
-# end
-
 And(/^there are at least (\d+) results$/) do |count|
   results = @web.wait_for '.results-paging'
   expect(results.text.to_i).to be > count.to_i
@@ -29,59 +25,67 @@ And(/^each result is in (.*)$/) do |location|
   links = @web.find_all 'a.at-related-props-card'
   # a .at-related-props-card - things with class inside a tags
   # a.at-related-props-card - a tags with class ...
-  links.each do |link|
-    id = something
-    result = @api.get_property_details id
-    expect(result['PublicRemarks']).to include location
-  end
+  locations = links.map { |l| l.attribute :href }
   pending
 end
 
+And(/^I click "Save Search"$/) do
+  button = @web.wait_for('a.js-save-search')
+  button.click
 
-And(/^I click "Save This Search"$/) do
-  el = @web.wait_for('a.js-save-search')
-  el.click
-  expect(el.text).to eq "Save This Search"
+  # modal = @web.wait_for('.js-sign-in-modal-switcher')
+  # expect(modal.text).to include 'Free Account Activation'
 end
 
 And(/^I complete registration$/) do
-  @email = Faker::Internet.email
+  step "I fill in email"
+  step "I fill in name and phone number"
+end
 
-  # first registration modal
-  input_el = @web.wait_for('.js-register-form input')
-  input_el.send_keys(@email)
+And(/^I fill in email$/) do
+  @my_email = Faker::Internet.email
 
-  pre_register_btn_el = @web.find('button.bt-squeeze__button')
-  pre_register_btn_el.click
+  form = @web.find '.js-register-form'
+  i = form.find_element(:name, 'email')
+  i.send_keys @my_email
 
+  form.find_element(:css, '.bt-squeeze__button').click
+end
 
-  # second registraton modal
-  @my_name = Faker::Name.name
+And(/^I fill in name and phone number/) do
+  @my_name  = Faker::Name.name
   @my_phone = Faker::PhoneNumber.phone_number
-  name_input_el = @web.wait_for('input.at-fullName-txt')
-  name_input_el.send_keys(@my_name)
 
-  num_input_el = @web.find('input.at-phone-txt')
-  num_input_el.send_keys(@my_phone)
+  form2 = @web.wait_for '.js-complete-register-form'
+  i = form2.find_element(:name, 'fullname')
+  i.send_keys @my_name
 
-  complete_registration_btn = @web.find('.at-complete-registration-btn')
-  complete_registration_btn.click
+  i = form2.find_element(:name, 'phone')
+  i.send_keys @my_phone
 
-  #   wait for registration to finish
+  complete = @web.find('button.at-submit-btn')
+  complete.click
+
+  # Wait for registration to finish
+  # @web.wait.until do
+  #   el = @web.find '#complete-register-modal'
+  #   !el
+  # end
   @web.wait_for 'a.js-signout'
 end
 
-And(/^I name the search "([^"]*)"$/) do |arg|
-  form = @web.wait_for('#save-search-form')
+And(/^I save the search as "([^"]*)"$/) do |name|
+  form = @web.wait_for '#save-search-form'
   i = form.find_element(:name, 'searchName')
-  i.send_keys(arg)
+  i.send_keys name
+
   form.find_element(:css, '.at-submit-btn').click
 end
 
-Then(/^I see "([^"]*)" in my saved search$/) do |arg|
+Then(/^I see "([^"]*)" in my saved searches$/) do |name|
   @web.visit '/notifications'
   first_link = @web.find '#searches a'
-  expect(first_link.text).to eq arg
+  expect(first_link.text).to eq name
 end
 
 And(/^I have a user account$/) do
@@ -90,5 +94,3 @@ And(/^I have a user account$/) do
   phone = @web.find '.at-phone-txt'
   expect(phone.text).to eq @my_phone
 end
-
-
