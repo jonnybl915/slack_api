@@ -1,6 +1,7 @@
 Given(/^I'm on the home page$/) do
   @api = Boomtown::Api.new(
-                          ENV.fetch()
+    ENV.fetch('BOOMTOWN_USERNAME'),
+    ENV.fetch('BOOMTOWN_PASSWORD')
   )
   @web = Boomtown::Web.new
   @web.visit '/'
@@ -24,14 +25,17 @@ And(/^there are at least (\d+) results$/) do |count|
   expect(results.text.to_i).to be > count.to_i
 end
 
-And(/^each result is in (.*)$/) do |location|
+And(/^each result mentions (.*)$/) do |phrase|
   links = @web.find_all 'a.at-related-props-card'
   # a .at-related-props-card - things with class inside a tags
   # a.at-related-props-card - a tags with class ...
   links.each do |link|
-    href
+    href   = link.attribute(:href)
+    id     = href.split('/').last
+    result = @api.get_property_details id
+
+    expect(result['PublicRemarks'].downcase).to include phrase.downcase
   end
-  expect(locations['PublicRemarks'].downcase).to include location.downcase
 end
 
 And(/^I click "Save Search"$/) do
@@ -59,14 +63,14 @@ end
 
 And(/^I fill in name and phone number/) do
   @my_name  = Faker::Name.name
-  @my_phone = Faker::PhoneNumber.phone_number
+  @my_phone = '8438887777'
 
   form2 = @web.wait_for '.js-complete-register-form'
   i = form2.find_element(:name, 'fullname')
   i.send_keys @my_name
 
   i = form2.find_element(:name, 'phone')
-  i.send_keys @my_phone
+  i.send_keys(@my_phone)
 
   complete = @web.find('button.at-submit-btn')
   complete.click
@@ -98,4 +102,8 @@ And(/^I have a user account$/) do
 
   phone = @web.find '.at-phone-txt'
   expect(phone.text).to eq @my_phone
+end
+
+And(/^my agent is located in Charleston$/) do
+  pending
 end

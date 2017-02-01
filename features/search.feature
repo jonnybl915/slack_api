@@ -11,12 +11,23 @@ Feature: search
 
   Scenario: new user saves asearch
     When I search for "Charleston"
-    And I click "Save This Search"
+    And I click "Save Search"
     And I complete registration
-    And I click "Save This Search"
-    And I name the search "CHS"
-    Then I see "CHS" in my saved search
+    And I click "Save Search"
+    And I save the search as "CHS"
+    Then I see "CHS" in my saved searches
     And I have a user account
+    And my agent is located in Charleston
+
+    Scenario: searching user gets squeezed
+      When I search for "Charleston"
+      And I click on the first property
+      And I go back
+      And I click on the second property
+      Then I see a registration form
+
+
+
 
 
 
