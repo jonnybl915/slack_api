@@ -10,4 +10,3 @@ require_relative '../../slack_api'
 
 Driver = Selenium::WebDriver.for :chrome
 
-at_exit { Driver.quit }
