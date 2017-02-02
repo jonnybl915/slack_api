@@ -1,40 +1,23 @@
 module Boomtown
   class PropertyListing
     def initialize(data)
-<<<<<<< HEAD
-      @data = data
-    end
-    def price
-    @price = data.fetch('ListPrice')
-    end
-    def url
-      "/homes/#{@data.fetch('_ID')}"
-=======
-      # @price = data.fetch 'ListPrice'
-      @data = data
-    end
 
+      @data = data
+    end
     def price
       @data.fetch 'ListPrice'
     end
-
     def url
       # "/homes/#{@data.fetch 'Address'}/#{@data.fetch 'City'}/#{@data.fetch 'State'}/..."
       "/homes/#{@data.fetch '_ID'}"
->>>>>>> 580a5fe7742cd41ff59a9a95917dbe358f02564f
+
     end
   end
 
   class Api
 
     def self.from_env
-<<<<<<< HEAD
-      Boomtown::Api.new(
-                ENV.fetch('BOOMTOWN_USERNAME'),
-                ENV.fetch('BOOMTOWN_PASSWORD')
-      )
-    end
-=======
+
       # Boomtown::Api.new(
       new(
          ENV.fetch('BOOMTOWN_USERNAME'),
@@ -42,7 +25,6 @@ module Boomtown
       )
     end
 
->>>>>>> 580a5fe7742cd41ff59a9a95917dbe358f02564f
     def initialize(username, password)
       @url   = 'http://flagshipapi.qa6.local/'
       @token = get_token(username, password)
@@ -85,7 +67,7 @@ module Boomtown
 
     def search(criteria)
       translations = {
-<<<<<<< HEAD
+
           :min_price => :minprice,
           :max_price => :max_price
       }
@@ -95,29 +77,11 @@ module Boomtown
           parameters[param_name] = criteria[criteria_name]
         end
       end
-=======
-        :min_price => :minprice,
-        :max_price => :maxprice,
-        :sort_by   => :sort,
-        :type      => :status
-      }
 
-      parameters = {}
-      translations.each do |crit_name, param_name|
-        if criteria[crit_name]
-          parameters[param_name] = criteria[crit_name]
-        end
-      end
-
->>>>>>> 580a5fe7742cd41ff59a9a95917dbe358f02564f
       data = send(:get, '/lc/1/listings/search', parameters)
       results = data['Result']['Items']
 
       results.map { |hash| PropertyListing.new hash }
-<<<<<<< HEAD
-
-=======
->>>>>>> 580a5fe7742cd41ff59a9a95917dbe358f02564f
     end
   end
 end
