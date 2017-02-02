@@ -134,3 +134,13 @@ Then(/^I see a registration form$/) do
   expect(modal.text).to include 'Want to Compare Homes'
   expect(modal.text).to include 'Continue With Email'
 end
+
+# Expensive = > $1,000,000
+When(/^I look at an expensive property$/) do
+  prop = @api.search(min_price: 1_000_000).first
+  @web.visit prop.url
+end
+
+Then(/^I should see at leas (\d+) properties that are related$/) do |arg|
+  pending
+end

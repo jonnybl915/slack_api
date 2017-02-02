@@ -1,5 +1,21 @@
 module Boomtown
+  class PropertyListing
+    def initialize(data)
+     @price = data.fetch('ListPrice')
+    end
+    def price
+
+    end
+  end
+
   class Api
+
+    def self.from_env
+      Boomtown::Api.new(
+                ENV.fetch('BOOMTOWN_USERNAME'),
+                ENV.fetch('BOOMTOWN_PASSWORD')
+      )
+    end
     def initialize(username, password)
       @url   = 'http://flagshipapi.qa6.local/'
       @token = get_token(username, password)
@@ -38,6 +54,14 @@ module Boomtown
       # &LogSearch=true
       data = send(:get, "/lc/1/listings/#{prop_id}") # {'LogSearch' => 'true'}
       data['Result']
+    end
+
+    def search(criteria)
+      data = send(:get, '/lc/1/listings/search')
+      results = data['Result']['Items']
+
+      results.map { |hash| PropertyListing.new hash }
+
     end
   end
 end
