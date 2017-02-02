@@ -1,23 +1,7 @@
 module Boomtown
-  class PropertyListing
-    def initialize(data)
-
-      @data = data
-    end
-    def price
-      @data.fetch 'ListPrice'
-    end
-    def url
-      # "/homes/#{@data.fetch 'Address'}/#{@data.fetch 'City'}/#{@data.fetch 'State'}/..."
-      "/homes/#{@data.fetch '_ID'}"
-
-    end
-  end
-
   class Api
 
     def self.from_env
-
       # Boomtown::Api.new(
       new(
          ENV.fetch('BOOMTOWN_USERNAME'),
@@ -67,14 +51,16 @@ module Boomtown
 
     def search(criteria)
       translations = {
-
-          :min_price => :minprice,
-          :max_price => :max_price
+        :min_price => :minprice,
+        :max_price => :maxprice,
+        :sort_by   => :sort,
+        :type      => :status
       }
+
       parameters = {}
-      translations.each do |criteria_name, param_name|
-        if criteria[criteria_name]
-          parameters[param_name] = criteria[criteria_name]
+      translations.each do |crit_name, param_name|
+        if criteria[crit_name]
+          parameters[param_name] = criteria[crit_name]
         end
       end
 
