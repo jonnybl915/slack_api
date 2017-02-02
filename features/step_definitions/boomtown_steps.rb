@@ -64,14 +64,14 @@ end
 
 And(/^I fill in name and phone number/) do
   @my_name  = Faker::Name.name
-  @my_phone = '8438887777'
+  @my_phone = Faker::PhoneNumber.phone_number
 
   form2 = @web.wait_for '.js-complete-register-form'
   i = form2.find_element(:name, 'fullname')
   i.send_keys @my_name
 
   i = form2.find_element(:name, 'phone')
-  i.send_keys(@my_phone)
+  i.send_keys @my_phone
 
   complete = @web.find('button.at-submit-btn')
   complete.click
@@ -105,42 +105,42 @@ And(/^I have a user account$/) do
   expect(phone.attribute :value).to eq @my_phone
 end
 
-And(/^my agent is located in Charleston$/) do
-  menu_btn = @web.wait_for('a.bt-off-canvas__trigger')
-  menu_btn.click
-
-  agent_anchor = @web.find('#menu-item-1154 a')
-  agent_href = agent_anchor.attribute :href
-  puts agent_href
+And(/^My agent is located in (\w+)$/) do |city|
+  match = /"AgentID":(\d+)/.match(@web.driver.page_source)
+  agent_id = match[1].to_i
 end
 
-
+# And(/^I click on the (first|second) property$/) do |ord|
 And(/^I click on the (\d+)(st|nd|rd|th) property$/) do |n,_|
   results = @web.wait_for '.js-load-results'
-  @all_props = results.find_elements(:css, '.bt-listing-teaser__link')
-  @all_props[n.to_i - 1].click
+  buttons = results.find_elements css: '.bt-listing-teaser__view-details'
+  buttons[n.to_i - 1].click
 end
 
-And(/^I go back$/) do
+And(/^I go back to search$/) do
   btn = @web.wait.until do
-  back_btns = @web.find_all('.js-back-to-search')
-  back_btns.find { |btn| btn.displayed? }
+    btns = @web.find_all '.js-back-to-search'
+    btns.find { |b| b.displayed? }
   end
   btn.click
 end
 
+
 Then(/^I see a registration form$/) do
-  modal = @web.wait_for('.bt-modal__top')
-  expect(modal.text).to include 'Want to Compare Homes'
+  modal = @web.wait_for '.bt-modal__top'
+  expect(modal.text).to include 'Want to Compare Homes?'
   expect(modal.text).to include 'Continue With Email'
+
+  # form = modal.find_element css: 'form'
+  # expect(form.attribute :action).to eq '...'
 end
 
-# Expensive = > $1,000,000
+# Expensive ~> > 1_000_000
 When(/^I look at an expensive property$/) do
   prop = @api.search(min_price: 1_000_000).first
   @web.visit prop.url
 end
 
-Then(/^I should see at leas (\d+) properties that are related$/) do |arg|
+Then(/^I should see at least (\d+) related properties$/) do |arg|
   pending
 end
