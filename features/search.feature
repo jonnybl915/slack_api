@@ -9,7 +9,7 @@ Feature: search
     And There are at least 10 results
     And each result mentions king
 
-  Scenario: new user saves asearch
+  Scenario: new user saves a search
     When I search for "Charleston"
     And I click "Save Search"
     And I complete registration
@@ -21,9 +21,9 @@ Feature: search
 
     Scenario: searching user gets squeezed
       When I search for "Charleston"
-      And I click on the first property
+      And I click on the 1st property
       And I go back
-      And I click on the second property
+      And I click on the 2nd property
       Then I see a registration form
 
 

@@ -34,6 +34,7 @@ And(/^each result mentions (.*)$/) do |phrase|
     id     = href.split('/').last
     result = @api.get_property_details id
 
+    puts id
     expect(result['PublicRemarks'].downcase).to include phrase.downcase
   end
 end
@@ -101,9 +102,35 @@ And(/^I have a user account$/) do
   @web.visit '/account'
 
   phone = @web.find '.at-phone-txt'
-  expect(phone.text).to eq @my_phone
+  expect(phone.attribute :value).to eq @my_phone
 end
 
 And(/^my agent is located in Charleston$/) do
-  pending
+  menu_btn = @web.wait_for('a.bt-off-canvas__trigger')
+  menu_btn.click
+
+  agent_anchor = @web.find('#menu-item-1154 a')
+  agent_href = agent_anchor.attribute :href
+  puts agent_href
+end
+
+
+And(/^I click on the (\d+)(st|nd|rd|th) property$/) do |n,_|
+  results = @web.wait_for '.js-load-results'
+  @all_props = results.find_elements(:css, '.bt-listing-teaser__link')
+  @all_props[n.to_i - 1].click
+end
+
+And(/^I go back$/) do
+  btn = @web.wait.until do
+  back_btns = @web.find_all('.js-back-to-search')
+  back_btns.find { |btn| btn.displayed? }
+  end
+  btn.click
+end
+
+Then(/^I see a registration form$/) do
+  modal = @web.wait_for('.bt-modal__top')
+  expect(modal.text).to include 'Want to Compare Homes'
+  expect(modal.text).to include 'Continue With Email'
 end
